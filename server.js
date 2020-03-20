@@ -16,7 +16,6 @@ var marked = require("marked");
 var app = express(); // Web framework to handle routing requests
 var routes = require("./app/routes");
 var config = require("./config/config"); // Application config properties
-/*
 // Fix for A6-Sensitive Data Exposure
 // Load keys for establishing secure HTTPS connection
 var fs = require("fs");
@@ -26,7 +25,6 @@ var httpsOptions = {
     key: fs.readFileSync(path.resolve(__dirname, "./artifacts/cert/server.key")),
     cert: fs.readFileSync(path.resolve(__dirname, "./artifacts/cert/server.crt"))
 };
-*/
 
 MongoClient.connect(config.db, function(err, db) {
     if (err) {
@@ -82,7 +80,7 @@ MongoClient.connect(config.db, function(err, db) {
         secret: config.cookieSecret,
         // Both mandatory in Express v4
         saveUninitialized: true,
-        resave: true
+        resave: true,
         // Fix for A5 - Security MisConfig
         // Use generic cookie name
         key: "sessionId",
@@ -97,7 +95,6 @@ MongoClient.connect(config.db, function(err, db) {
 
     }));
 
-    /*
     // Fix for A8 - CSRF
     // Enable Express csrf protection
     app.use(csrf());
@@ -106,7 +103,6 @@ MongoClient.connect(config.db, function(err, db) {
         res.locals.csrftoken = req.csrfToken();
         next();
     });
-    */
 
     // Register templating engine
     app.engine(".html", consolidate.swig);
@@ -131,17 +127,10 @@ MongoClient.connect(config.db, function(err, db) {
         autoescape: true // default value
     });
 
-    // Insecure HTTP connection
-    http.createServer(app).listen(config.port, function() {
-        console.log("Express http server listening on port " + config.port);
-    });
-
-    /*
     // Fix for A6-Sensitive Data Exposure
     // Use secure HTTPS protocol
     https.createServer(httpsOptions, app).listen(config.port,  function() {
         console.log("Express https server listening on port " + config.port);
     });
-    */
 
 });
